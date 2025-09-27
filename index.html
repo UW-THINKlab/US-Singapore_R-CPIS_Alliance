@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US-Singapore Research Alliance (R-CPIS)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for Inter font and academic aesthetic */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            /* Light gray background for professionalism */
+            color: #1e293b;
+            /* Dark text */
+        }
+
+        .container-section {
+            padding: 3rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .header-bg {
+            background-color: #1e3a8a;
+            /* Dark Blue */
+            color: white;
+        }
+
+        /* Removed .agenda-item style as the detailed agenda is gone */
+    </style>
+    <script>
+        // Data extracted and structured from "List of participants.docx"
+        // Institutional affiliation added for each participant.
+        const participantsData = [
+            // UPDATED EXPERTISE FOR ARANYA CHAKRABORTTY
+            { name: "Aranya Chakrabortty", topic: "Real time control and decision making", expertise: "Control theory and optimization with applications to large-scale electric power systems, including dynamic modeling, stability, wide-area control using PMU/Synchrophasors, renewable energy integration, machine learning for control, and power system cyber-security.", confirmed: true, link: null, imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=AC", affiliation: "NC State University" },
+            {
+                name: "Cathy Wu",
+                topic: "Real time control and decision making",
+                expertise: "**Machine learning, optimization, and control theory** applied to the complex integration of **mixed autonomy mobility systems** (e.g., self-driving cars) into existing urban and societal systems.", // REVISED EXPERTISE
+                confirmed: true,
+                link: "http://www.wucathy.com/", // ADDED INSTITUTIONAL/PERSONAL LINK
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=CW",
+                affiliation: "Massachusetts Institute of Technology (MIT)"
+            },
+            // UPDATED EXPERTISE FOR MIHAI ANITESCU
+            { name: "Mihai Anitescu", topic: "Smart technologies (large systems)", expertise: "Numerical optimization, uncertainty quantification, and computational mathematics applied to complex energy systems and stochastic grid dynamics.", confirmed: true, link: null, imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=MA", affiliation: "University of Chicago / Argonne National Lab" },
+            {
+                name: "Rafael Munoz-Carpena",
+                topic: "Adaptive capacity of infrastructure systems",
+                expertise: "Integrated **environmental systems analysis and modeling**, focusing on **hydrology** and **water quality**, contaminant transport, and the **global sensitivity and uncertainty analysis** of complex natural-human coupled systems.", // REVISED EXPERTISE AND ADDED LINK
+                confirmed: true,
+                link: "https://abe.ufl.edu/faculty/carpena/",
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=RM",
+                affiliation: "University of Florida"
+            },
+            {
+                name: "Nalini Venkatasubramanian",
+                topic: "Adaptive capacity of infrastructure systems/resilience of the people",
+                expertise: "**Adaptive software systems** and **middleware** for building **community-scale resilient Internet of Things (IoT) systems**, focusing on high-impact applications like **emergency response**, smart-water infrastructure, and public safety.", // REVISED EXPERTISE PER INSTITUTIONAL WEBSITE
+                confirmed: true,
+                link: "https://nalini.ics.uci.edu/", // ADDED INSTITUTIONAL LINK
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=NV",
+                affiliation: "UC Irvine"
+            },
+            {
+                name: "Pascal Van Hentenryck",
+                topic: "Real time control and decision making",
+                expertise: "Artificial Intelligence, Data Science, and Optimization (Operations Research) applied to critical infrastructure, focusing on methodologies for mobility, energy systems, resilience, and privacy.", // REVISED EXPERTISE
+                confirmed: true,
+                link: "https://www.isye.gatech.edu/users/pascal-van-hentenryck", // ADDED INSTITUTIONAL LINK
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=PV",
+                affiliation: "Georgia Institute of Technology"
+            },
+            { name: "Luis Ceferino", topic: "Real time control and decision making", expertise: "Multi-hazard risk analysis; reliability of critical infrastructure systems; climate adaptation and disaster resilience; structural engineering; extreme event modeling.", confirmed: true, link: "https://ce.berkeley.edu/people/faculty/ceferino", imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=LC", affiliation: "UC Berkeley" },
+            {
+                name: "Katherine Flanigan",
+                topic: "Smart technologies (large systems)",
+                expertise: "Cyber-Physical-Social Systems (CPSS) theory and tools for human-centered infrastructure management; developing intelligent, adaptable CPSS that integrate novel sensing, computing, and human interaction to optimize for social and community-based resilience objectives.", // REVISED EXPERTISE
+                confirmed: true,
+                link: "https://cee.engineering.cmu.edu/directory/bios/flanigan-katherine.html",
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=KF",
+                affiliation: "Carnegie Mellon University"
+            },
+            { name: "Chen Feng", topic: "Adaptive capacity of infrastructure systems", expertise: "Robotic Vision, Machine Learning, and Augmented Reality applied to autonomous systems for smart infrastructure, construction automation, and 3D modeling of built environments.", confirmed: true, link: "https://engineering.nyu.edu/faculty/chen-feng", imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=CF", affiliation: "New York University (NYU)" },
+            {
+                name: "Sara Hamideh",
+                topic: "Adaptive capacity of infrastructure systems/resilience of the people",
+                expertise: "Disaster and **housing recovery** with a focus on **socio-economic equity** for vulnerable populations (e.g., public housing residents, renters). Expertise includes **interdisciplinary modeling of community resilience** across physical and social systems.", // UPDATED FROM INSTITUTIONAL WEBSITE
+                confirmed: true,
+                link: "https://www.stonybrook.edu/commcms/somas/people/_profiles/sara-hamideh",
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=SH",
+                affiliation: "Stony Brook University"
+            },
+            {
+                name: "David Johnson",
+                topic: "Adaptive capacity of infrastructure systems/resilience of the people",
+                expertise: "Decision-making under uncertainty, applied to climate change adaptation and environmental policy; flood risk modeling; multi-criteria tradeoff analysis for sustainable infrastructure and agriculture.", // REVISED EXPERTISE
+                confirmed: true,
+                link: "https://www.cla.purdue.edu/directory/profiles/david-johnson.html",
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=DJ",
+                affiliation: "Purdue University"
+            },
+            {
+                name: "Yanfeng Ouyang",
+                topic: "Adaptive capacity",
+                expertise: "Planning, operations, and control of complex **transportation and logistics systems**, focusing on methods to improve the safety, efficiency, and **resiliency of complex transportation systems** and supply chains.", // REVISED EXPERTISE
+                confirmed: true,
+                link: "https://cee.illinois.edu/directory/profile/yfouyang", // ADDED INSTITUTIONAL LINK
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=YO",
+                affiliation: "University of Illinois Urbana-Champaign (UIUC)"
+            },
+            {
+                name: "Marco Nie",
+                topic: "Adaptive Capacity",
+                expertise: "Transportation Systems Analysis, including optimization, network science, economics, and statistics for efficient and sustainable mobility.", // Updated expertise
+                confirmed: true,
+                link: null,
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=MN",
+                affiliation: "Northwestern University"
+            },
+            {
+                name: "Yafeng Yin",
+                topic: "Adaptive Capacity",
+                // REVISED EXPERTISE AND ADDED LINK
+                expertise: "Analysis, modeling, and optimization of **multimodal transportation systems** for efficiency and sustainability, with a current focus on **connected and automated mobility** and the **interdependency of urban infrastructure**.",
+                confirmed: true,
+                link: "https://cee.engin.umich.edu/people/yin-yafeng/",
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=YY",
+                affiliation: "University of Michigan"
+            },
+            {
+                name: "Xiao Liu",
+                topic: "Resilience of socio-technical systems with human in the loop",
+                expertise: "Domain-aware statistical learning for scientific and engineering applications, focusing on environment and energy, urban resilience, system informatics, and modeling the interaction between solar energy production and wildfires.", // REVISED EXPERTISE
+                confirmed: true,
+                link: "https://www.isye.gatech.edu/users/xiao-liu", // ADDED INSTITUTIONAL LINK
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=XL",
+                affiliation: "Georgia Institute of Technology"
+            },
+            // UPDATED EXPERTISE FOR TICHAKORN (NOK) WONGPIROMSARN
+            {
+                name: "Tichakorn (Nok) Wongpiromsarn",
+                topic: "Real time control and decision making", // In line with her work on motion planning and control
+                expertise: "**Formal methods**, motion planning, situational reasoning, and **distributed control systems** applied to safety-critical autonomous systems, **robotics**, and **transportation**.",
+                confirmed: true,
+                link: "https://tichakorn.dev/",
+                imageUrl: "https://placehold.co/80x80/6366f1/ffffff?text=TW",
+                affiliation: "Iowa State University"
+            }
+        ];
+
+        // Organizer data
+        let organizersData = [
+            {
+                name: "Cynthia Chen",
+                affiliation: "University of Washington",
+                imageUrl: "https://placehold.co/80x80/10b981/ffffff?text=C.Chen",
+                link: "https://www.ce.washington.edu/facultyfinder/cynthia-chen",
+                expertise: "sensing, monitoring, analysis and incentive designs of urban transportation systems with human in the loop, particularly focusing on human mobility modeling and peer-to-peer resource sharing." // UPDATED: BOLDING REMOVED
+            },
+            {
+                name: "Jonas Joerin",
+                affiliation: "Managing Director of UIUC’s Illinois Advanced Research Center at Singapore (Local Host)",
+                imageUrl: "https://placehold.co/80x80/10b981/ffffff?text=J.Joerin",
+                link: "https://frs.ethz.ch/people/management/JonasJoerin.html",
+                expertise: "Strategic planning, international research management, and science diplomacy focused on resilient urban systems."
+            },
+            {
+                name: "David Corman",
+                affiliation: "Former NSF Program Director",
+                imageUrl: "https://placehold.co/80x80/10b981/ffffff?text=D.Corman",
+                link: null,
+                expertise: "Cyber-physical systems (CPS), sensing and control, and large-scale federal research program development and management."
+            },
+            {
+                name: "Yueyue Fan",
+                affiliation: "University of California Davis",
+                imageUrl: "https://placehold.co/80x80/10b981/ffffff?text=Y.Fan",
+                link: "https://faculty.engineering.ucdavis.edu/fan/",
+                expertise: "**Modeling, optimization, and computation for transportation and renewable energy infrastructure systems**, with a focus on integrating applied mathematics and engineering domain knowledge to address challenges related to **system uncertainty, dynamics, and data issues** to improve the **resilience and sustainability** of civil infrastructure." // UPDATED EXPERTISE
+            },
+            {
+                name: "Tony Kuh",
+                affiliation: "University of Hawaii",
+                imageUrl: "https://placehold.co/80x80/10b981/ffffff?text=T.Kuh",
+                link: "http://www.ee.hawaii.edu/~kuh/info.html",
+                expertise: "Signal processing, neural networks, and research administration; former chair of NSF's Engineering Directorate Advisory Committee."
+            },
+            {
+                name: "Daan Liang",
+                affiliation: "University of Alabama",
+                imageUrl: "https://placehold.co/80x80/10b981/ffffff?text=D.Liang",
+                link: "https://eng.ua.edu/eng-directory/dr-daan-liang/",
+                expertise: "Hazard risk modeling and reduction for critical infrastructure, structural engineering, and earthquake and wind engineering."
+            },
+            {
+                name: "Elise Miller-Hooks",
+                affiliation: "George Mason University",
+                imageUrl: "https://placehold.co/80x80/10b981/ffffff?text=E.Hooks",
+                link: "https://www.gmu.edu/profiles/miller",
+                expertise: "Interdependent network resilience, disaster logistics, dynamic traffic assignment, and network flow optimization."
+            },
+        ];
+
+        // Helper function to extract the last name (last word in the name string)
+        function getLastName(fullName) {
+            // Remove any parenthetical nicknames first to ensure we get the correct last name part
+            let cleanedName = fullName.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
+            const parts = cleanedName.split(' ');
+            return parts[parts.length - 1];
+        }
+
+        // 1. Sort the participantsData array by last name
+        participantsData.sort((a, b) => {
+            const lastNameA = getLastName(a.name);
+            const lastNameB = getLastName(b.name);
+            return lastNameA.localeCompare(lastNameB);
+        });
+
+        // 2. Sort the organizersData array by last name
+        organizersData.sort((a, b) => {
+            const lastNameA = getLastName(a.name);
+            const lastNameB = getLastName(b.name);
+            return lastNameA.localeCompare(lastNameB);
+        });
+
+        // Function to render the organizer list (UPDATED TO INCLUDE EXPERTISE)
+        function renderOrganizers() {
+            const container = document.getElementById('organizers-list');
+            if (!container) return; // safety check
+
+            container.innerHTML = ''; // Clear previous content
+
+            // Note: organizersData is now sorted
+            organizersData.forEach(o => {
+                const cardHtml = `
+                    <div class="card rounded-xl p-6 shadow-md flex flex-col space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <!-- Photo/Placeholder -->
+                            <img src="${o.imageUrl}" alt="Photo of ${o.name}" 
+                                 class="w-16 h-16 rounded-full object-cover shadow-inner bg-green-100 ring-2 ring-green-500" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/80x80/e2e8f0/475569?text=N/A';" />
+                            
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-gray-900">${o.name}</h3>
+                                <p class="text-sm text-gray-600">${o.affiliation}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- NEW EXPERTISE BLOCK ADDED -->
+                        <div class="border-t border-gray-100 pt-3">
+                            <p class="text-xs font-semibold uppercase text-green-600 mb-1">Key Expertise</p>
+                            <p class="text-gray-600 text-sm">${o.expertise || 'N/A'}</p>
+                        </div>
+                        
+                        <!-- Institutional Link -->
+                        ${o.link ?
+                        `<div class="mt-2 border-t border-gray-100 pt-3">
+                                <a href="${o.link}" target="_blank" class="text-sm font-semibold text-green-600 hover:text-green-800 transition duration-150 flex items-center">
+                                    View Institutional Profile
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            </div>` :
+                        '<div class="mt-2 border-t border-gray-100 pt-3"><span class="text-sm text-gray-400">Profile Link N/A</span></div>'
+                    }
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        // Function to render the participant list (rest remains the same)
+        function renderParticipants() {
+            const container = document.getElementById('participants-list');
+            const confirmedFilter = document.getElementById('confirmed-filter').value;
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+
+            // Filter participants based on search and confirmation status
+            const filteredParticipants = participantsData.filter(p => {
+                // Include affiliation in the search for better results
+                const searchMatch = p.name.toLowerCase().includes(searchInput) ||
+                    (p.topic && p.topic.toLowerCase().includes(searchInput)) ||
+                    (p.expertise && p.expertise.toLowerCase().includes(searchInput)) ||
+                    (p.affiliation && p.affiliation.toLowerCase().includes(searchInput));
+
+                const confirmedMatch = confirmedFilter === 'all' ||
+                    (confirmedFilter === 'confirmed' && p.confirmed) ||
+                    (confirmedFilter === 'pending' && !p.confirmed);
+
+                return searchMatch && confirmedMatch;
+            });
+
+            container.innerHTML = ''; // Clear previous content
+
+            if (filteredParticipants.length === 0) {
+                // Ensure the "No participants" message spans the grid
+                container.innerHTML = '<p class="text-center text-gray-500 col-span-1 md:col-span-2 lg:col-span-3">No participants match your current filters.</p>';
+                return;
+            }
+
+            filteredParticipants.forEach(p => {
+                const linkHtml = p.link ? `<a href="${p.link}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 font-medium transition duration-150">View Profile &rarr;</a>` :
+                    '<span class="text-sm text-gray-400">Profile N/A</span>';
+
+                const confirmedBadge = p.confirmed ?
+                    '<span class="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">Confirmed</span>' :
+                    '<span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">Pending</span>';
+
+                const cardHtml = `
+                    <div class="card rounded-xl p-6 shadow-md flex flex-col space-y-4">
+                        <!-- Speaker Photo/Placeholder -->
+                        <div class="flex items-center space-x-4">
+                            <img src="${p.imageUrl}" alt="Photo of ${p.name}" 
+                                 class="w-16 h-16 rounded-full object-cover shadow-inner bg-indigo-100" 
+                                 onerror="this.onerror=null; this.src='https://placehold.co/80x80/e2e8f0/475569?text=N/A';" />
+                            
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center mb-1">
+                                    <h3 class="text-xl font-bold text-gray-900">${p.name}</h3>
+                                    ${confirmedBadge}
+                                </div>
+                                <p class="text-sm text-gray-600 mb-1">${p.affiliation || 'Affiliation N/A'}</p>
+                                <p class="text-sm font-semibold uppercase text-indigo-600">${p.topic || 'N/A Topic'}</p>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-3">
+                            <p class="text-xs font-semibold uppercase text-indigo-600 mb-1">Key Expertise</p>
+                            <p class="text-gray-600 text-sm">${p.expertise || 'N/A'}</p>
+                        </div>
+                        
+                        ${linkHtml}
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        // Initialize rendering on load
+        window.onload = function () {
+            renderOrganizers(); // Render organizers (now sorted)
+            renderParticipants(); // Render participants (sorted and updated)
+            // Attach event listeners for filtering
+            document.getElementById('confirmed-filter').addEventListener('change', renderParticipants);
+            document.getElementById('search-input').addEventListener('input', renderParticipants);
+        };
+    </script>
+</head>
+
+<body>
+
+    <!-- Header / Logo -->
+    <header class="header-bg shadow-lg">
+        <div class="container-section flex justify-between items-center h-20">
+            <!-- REPLACEMENT HERE -->
+            <h1 class="text-3xl font-extrabold tracking-tight">US -SINGAPORE RESEARCH ALLIANCE</h1>
+            <nav class="space-x-4">
+                <a href="#overview" class="text-gray-200 hover:text-white font-medium">Overview</a>
+                <a href="#rationale" class="text-gray-200 hover:text-white font-medium">Rationale</a>
+                <a href="#agenda" class="text-gray-200 hover:text-white font-medium">Agenda</a>
+                <a href="#organizers" class="text-gray-200 hover:text-white font-medium">Organizers</a>
+                <a href="#participants" class="text-gray-200 hover:text-white font-medium">Participants</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="container-section text-center bg-white/80 rounded-b-xl shadow-lg -mt-10 pt-16">
+            <h2 class="text-5xl font-extrabold text-gray-900 leading-tight mb-4">
+                Resilience of Complex Cyber-Physical Infrastructure Systems (R-CPIS) in the Era of AI
+            </h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                This proposal outlines a strategic international collaboration to address the growing need for resilient
+                cyber-physical infrastructure against escalating natural and man-made threats, leveraging cutting-edge
+                AI technologies.
+            </p>
+            <!-- BUTTON REMOVED HERE -->
+        </section>
+
+        <!-- Overview Section -->
+        <section id="overview" class="container-section bg-white border-b border-gray-100">
+            <h3 class="text-3xl font-bold text-gray-900 mb-6 text-center">R-CPIS Alliance Overview</h3>
+            <div class="text-gray-700 leading-relaxed max-w-4xl mx-auto space-y-4 text-lg">
+                <p>
+                    To maintain global leadership in science and technology, the U.S. needs to work closely with many of
+                    its allies to **attract talent, spur innovations, and generate real impacts**. The National Science
+                    Foundation (NSF) is a leader in international collaborations, demonstrated by successful initiatives
+                    like the NSF-Swiss NSF Lead Agency Opportunity.
+                </p>
+                <p>
+                    This proposal focuses on a US-Singapore Research Alliance on the **Resilience of Complex
+                    Cyber-Physical Infrastructure Systems (R-CPIS)**. This partnership is vital because: 1) it is
+                    undeniable that the future will bring more increasing frequencies and intensities of **natural and
+                    man-made disasters** such as cyber-attacks, wildfires, and space weather; and 2) the urgency for
+                    resilient cyber-physical infrastructure systems has escalated with the rapid integration of
+                    **AI-driven technologies**.
+                </p>
+            </div>
+        </section>
+
+        <!-- Rationale Section -->
+        <section id="rationale" class="container-section bg-gray-50">
+            <h3 class="text-3xl font-bold text-gray-900 mb-10 text-center">Alliance Rationale & Urgency</h3>
+
+            <div class="grid md:grid-cols-2 gap-10">
+                <!-- Why Singapore? -->
+                <div class="card rounded-xl p-6">
+                    <div class="text-2xl font-bold text-indigo-600 mb-3 flex items-center">
+                        <span class="mr-2 text-3xl">🇸🇬</span> Why Singapore?
+                    </div>
+                    <ul class="space-y-4 text-gray-700 list-disc list-inside">
+                        <li>**Innovation-Driven Focus:** Singapore is renowned for its focus on real-world impacts and
+                            technology adoption.</li>
+                        <li>**Strategic Location in Asia:** Collaboration leverages Singapore's critical geopolitical
+                            position.</li>
+                        <li>**Technology Leverage:** The U.S. benefits from technologies already developed and tested in
+                            real settings within Singapore.</li>
+                        <li>**Talent Acquisition:** Attracting international talent to spur innovations critical for
+                            global leadership.</li>
+                    </ul>
+                </div>
+
+                <!-- Why Now? -->
+                <div class="card rounded-xl p-6">
+                    <div class="text-2xl font-bold text-indigo-600 mb-3 flex items-center">
+                        <span class="mr-2 text-3xl">⚡</span> Why Now? (The Urgency)
+                    </div>
+                    <ul class="space-y-4 text-gray-700 list-disc list-inside">
+                        <li>**Increasing Disasters:** Unavoidable future with greater frequency and intensity of natural
+                            disasters (hurricanes, wildfires).</li>
+                        <li>**Escalating Threats:** Rising risk from man-made disasters, including sophisticated
+                            **cyber-attacks** and space weather events.</li>
+                        <li>**AI Integration:** The need for resilient Cyber-Physical Infrastructure Systems (CPIS) is
+                            urgent, especially with the rapid integration of AI.</li>
+                        <li>**Global Leadership:** Collaboration is key to maintaining a global leadership role in
+                            science and technology.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- UPDATED Agenda Section -->
+        <section id="agenda" class="container-section bg-white border-b border-gray-100">
+            <h3 class="text-3xl font-bold text-gray-900 mb-4 text-center">Workshop Structure & Core Research Themes</h3>
+            <p class="text-center text-lg text-gray-600 max-w-3xl mx-auto mb-10">
+                The two-day workshop is designed to maximize collaboration and synergy across four key research areas,
+                supplemented by networking and experiential learning activities.
+            </p>
+
+            <div class="max-w-4xl mx-auto space-y-12">
+                <!-- Core Themes -->
+                <div class="card rounded-xl p-8 shadow-xl bg-indigo-50 border-indigo-200">
+                    <h4 class="text-2xl font-extrabold text-indigo-700 mb-5 border-b-2 border-indigo-300 pb-3">Four
+                        Foundational Research Themes</h4>
+                    <ul class="grid sm:grid-cols-2 gap-4 text-gray-700">
+                        <li class="flex items-start space-x-3"><span class="text-indigo-600 font-bold">1.</span>
+                            <span>**Real-Time Control and Decision Making**</span></li>
+                        <li class="flex items-start space-x-3"><span class="text-indigo-600 font-bold">2.</span>
+                            <span>**Smart Technologies for Large-Scale Systems**</span></li>
+                        <li class="flex items-start space-x-3"><span class="text-indigo-600 font-bold">3.</span>
+                            <span>**Adaptive Capacity of Infrastructure Systems**</span></li>
+                        <li class="flex items-start space-x-3"><span class="text-indigo-600 font-bold">4.</span>
+                            <span>**Socio-Technical Resilience and Human in the Loop**</span></li>
+                    </ul>
+                </div>
+
+                <!-- Activities & Tours -->
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Activities -->
+                    <div class="card rounded-xl p-6 shadow-lg bg-gray-50">
+                        <h4 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Key Activities</h4>
+                        <ul class="space-y-2 text-gray-700 list-disc list-inside ml-5">
+                            <li>Distinguished **Keynotes**</li>
+                            <li>Expert **Presentations** on foundational topics</li>
+                            <li>Interactive **Panel Discussions**</li>
+                            <li>Collaborative **Brainstorm Sessions**</li>
+                            <li>Focused **Mini-Proposal Workshops**</li>
+                        </ul>
+                    </div>
+
+                    <!-- Tours -->
+                    <div class="card rounded-xl p-6 shadow-lg bg-gray-50">
+                        <h4 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Experiential Learning</h4>
+                        <p class="text-gray-700">Attendees will have the opportunity to participate in **pre- and
+                            post-workshop technical tours** of Singapore’s advanced infrastructure systems and research
+                            facilities, highlighting real-world applications of resilience concepts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Organizers Section (UPDATED TO SHOW EXPERTISE) -->
+        <section id="organizers" class="container-section bg-gray-50 border-b border-gray-100">
+            <h3 class="text-3xl font-bold text-gray-900 mb-8 text-center">Organizing Committee</h3>
+            <div id="organizers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <!-- Organizer cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Participants Section -->
+        <section id="participants" class="container-section">
+            <h3 class="text-3xl font-bold text-gray-900 mb-4 text-center">Confirmed Speakers & Participants</h3>
+            <p class="text-center text-gray-600 mb-8">A growing list of experts in real-time control, adaptive capacity,
+                and resilience of complex systems.</p>
+
+            <!-- Search and Filter Controls -->
+            <div
+                class="flex flex-col md:flex-row gap-4 mb-8 p-4 bg-white rounded-lg shadow-inner border border-gray-200">
+                <input type="text" id="search-input" oninput="renderParticipants()"
+                    placeholder="Search by name, topic, expertise, or institution..."
+                    class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
+
+                <select id="confirmed-filter" onchange="renderParticipants()"
+                    class="p-3 border border-gray-300 rounded-lg appearance-none focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                    <option value="all">All Participants</option>
+                    <option value="confirmed">Confirmed Only</option>
+                    <option value="pending">Pending Confirmation</option>
+                </select>
+            </div>
+
+            <!-- Participant Grid -->
+            <div id="participants-list" class="grid grid-cols-1 md:grid-cols-2 lg:col-span-3 gap-6">
+                <!-- Participant cards will be inserted here by JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12 py-8">
+        <div class="container-section text-center">
+            <p class="text-lg font-semibold mb-2">US-Singapore R-CPIS Alliance</p>
+            <p class="text-sm text-gray-400">&copy; 2025 Research Alliance Proposal. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
