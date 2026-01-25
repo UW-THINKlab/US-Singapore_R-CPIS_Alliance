@@ -108,6 +108,28 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+
+        /* New: Group section styling */
+        .group-section { 
+            border-radius: 12px; 
+            padding: 2rem; 
+            background: white; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+        .group-us { border-left: 6px solid #3b82f6; }
+        .group-sg { border-left: 6px solid #ef4444; }
+        .group-other { border-left: 6px solid #6b7280; }
+
+        .hidden-group {
+            display: none !important;
+        }
+
+        span.emoji,
+        .emoji {   /* broader selector */
+            font-family: "Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", sans-serif !important;
+            font-size: inherit;   /* or keep your text-6xl etc. */
+        }
+
     </style>
     <script>
         // Data extracted and structured from "List of participants.docx"
@@ -152,7 +174,7 @@
                 affiliation: "University of Florida"
             },
             {
-                name: "Nalini Venkatasubramanian",
+                name: "Nalini Venkatasu-bramanian",
                 topic: "Adaptive capacity of infrastructure systems / resilience of the people",
                 expertise: "Adaptive software systems and middleware for building community-scale resilient Internet of Things (IoT) systems, focusing on high-impact applications like emergency response, smart-water infrastructure, and public safety.", // REVISED EXPERTISE PER INSTITUTIONAL WEBSITE
                 confirmed: true,
@@ -593,6 +615,28 @@
             },
         ];
 
+        // NEW: Group classification
+        function getParticipantGroup(affiliation) {
+            if (!affiliation) return 'Other';
+            const aff = affiliation.toLowerCase();
+
+            // Singapore (most specific first)
+            if (aff.includes('singapore') || aff.includes('nus') || aff.includes('ntu') || 
+                aff.includes('a*star') || aff.includes('ihpc') || aff.includes('lta') || 
+                aff.includes('htx') || aff.includes('create') || aff.includes('centre for liveable cities')) {
+                return 'Singapore';
+            }
+
+            // Other international
+            if (aff.includes('japan') || aff.includes('nagoya') || aff.includes('gifu') || 
+                aff.includes('australia') || aff.includes('sydney') || aff.includes('taiwan')) {
+                return 'Other';
+            }
+
+            // Default: assume US (covers most universities like MIT, UIUC, Purdue, etc.)
+            return 'United States';
+        }
+
         // Helper function to extract the last name (last word in the name string)
         function getLastName(fullName) {
             // Remove any parenthetical nicknames first to ensure we get the correct last name part
@@ -663,7 +707,7 @@
         }
 
         // Function to render the participant list (rest remains the same)
-        function renderParticipants() {
+        function renderParticipants_v0() {
             const container = document.getElementById('participants-list');
             const confirmedFilter = document.getElementById('confirmed-filter').value;
             const searchInput = document.getElementById('search-input').value.toLowerCase();
@@ -729,6 +773,151 @@
             });
         }
 
+        // Updated: Render participants in 3 groups
+        function renderParticipants() {
+            const containers = {
+                'United States': document.getElementById('us-participants-list'),
+                'Singapore': document.getElementById('sg-participants-list'),
+                'Other': document.getElementById('other-participants-list')
+            };
+            const counts = {
+                'United States': document.getElementById('us-count'),
+                'Singapore': document.getElementById('sg-count'),
+                'Other': document.getElementById('other-count')
+            };
+
+            Object.values(containers).forEach(c => c && (c.innerHTML = ''));
+
+            //const confirmedFilter = document.getElementById('confirmed-filter').value;
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const selectedGroup = document.getElementById('group-filter').value;
+
+            // Hide all groups first
+            document.querySelectorAll('.group-section').forEach(el => el.classList.add('hidden-group'));
+
+            // Show only what we need
+            if (selectedGroup === 'all') {
+                document.querySelectorAll('.group-section').forEach(el => el.classList.remove('hidden-group'));
+            } else {
+                const targetSection = document.getElementById({
+                    'United States': 'us-section',
+                    'Singapore': 'sg-section',
+                    'Other': 'other-section'
+                }[selectedGroup]);
+                if (targetSection) targetSection.classList.remove('hidden-group');
+            }
+
+            const filtered = participantsData.filter(p => {
+                const match = 
+                    p.name.toLowerCase().includes(searchInput) ||
+                    (p.topic?.toLowerCase().includes(searchInput)) ||
+                    (p.expertise?.toLowerCase().includes(searchInput)) ||
+                    (p.affiliation?.toLowerCase().includes(searchInput));
+
+                //const confMatch = confirmedFilter === 'all' ||
+                //                  (confirmedFilter === 'confirmed' && p.confirmed) ||
+                //                  (confirmedFilter === 'pending' && !p.confirmed);
+
+                // Apply group filter
+                const group = getParticipantGroup(p.affiliation);
+                const groupMatch = selectedGroup === 'all' || group === selectedGroup;
+                
+                return match && groupMatch;
+                //return match && confMatch;
+            });
+
+            // Group them
+            const groups = { 'United States': [], 'Singapore': [], 'Other': [] };
+            filtered.forEach(p => {
+                const g = getParticipantGroup(p.affiliation);
+                if (groups[g]) groups[g].push(p);
+            });
+
+            // Update counts
+            Object.keys(groups).forEach(g => {
+                const cnt = groups[g].length;
+                //if (counts[g]) counts[g].textContent = `${cnt} expert${cnt === 1 ? '' : 's'}`;
+                if (counts[g]) counts[g].textContent = `(${cnt})`;
+            });
+
+            // Decide which container(s) to render into
+            let targetContainers = [];
+            if (selectedGroup === 'all') {
+                targetContainers = Object.values(containers);
+            } else {
+                const targetId = {
+                    'United States': 'us-participants-list',
+                    'Singapore': 'sg-participants-list',
+                    'Other': 'other-participants-list'
+                }[selectedGroup];
+
+                if (targetId) {
+                    targetContainers = [document.getElementById(targetId)];
+                }
+            }
+
+            // Clear containers that are not targeted (important when switching groups)
+            Object.values(containers).forEach(c => {
+                if (!targetContainers.includes(c)) c.innerHTML = '';
+            });
+
+            // Render helper
+            function renderGroup(groupData, container) {
+                if (!container) return;
+                if (groupData.length === 0) {
+                    container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-12">No participants in this group match the current filters.</p>';
+                    return;
+                }
+
+                groupData.forEach(p => {
+                    const linkHtml = p.link 
+                        ? `<a href="${p.link}" target="_blank" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View Profile →</a>`
+                        : '<span class="text-sm text-gray-400">Profile N/A</span>';
+
+                    const confirmedBadge = p.confirmed
+                        ? '<span class="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800">Confirmed</span>'
+                        : '<span class="inline-flex items-center rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">Pending</span>';
+
+                    const cardHtml = `
+                        <div class="card rounded-xl p-6 shadow-md flex flex-col space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <img src="${p.imageUrl}" alt="${p.name}" 
+                                     class="w-16 h-16 rounded-full object-cover shadow-inner bg-indigo-100" 
+                                     onerror="this.src='https://placehold.co/80x80/e2e8f0/475569?text=N/A';" />
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <h3 class="text-xl font-bold text-gray-900">${p.name}</h3>
+                                        ${confirmedBadge}
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-1">${p.affiliation || 'Affiliation N/A'}</p>
+                                    <p class="text-sm font-semibold uppercase text-indigo-600">${p.topic || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <div class="border-t border-gray-100 pt-3">
+                                <p class="text-xs font-semibold uppercase text-indigo-600 mb-1">Key Expertise</p>
+                                <p class="text-gray-600 text-sm">${p.expertise || 'N/A'}</p>
+                            </div>
+                            <div class="pt-2">${linkHtml}</div>
+                        </div>`;
+                    container.innerHTML += cardHtml;
+                });
+            }
+
+            //renderGroup(groups['United States'], containers['United States']);
+            //renderGroup(groups['Singapore'], containers['Singapore']);
+            //renderGroup(groups['Other'], containers['Other']);
+            // Render only to the target container(s)
+            if (selectedGroup === 'all') {
+                renderGroup(groups['United States'], containers['United States']);
+                renderGroup(groups['Singapore'], containers['Singapore']);
+                renderGroup(groups['Other'], containers['Other']);
+            } else {
+                const g = selectedGroup;
+                const container = containers[g];
+                renderGroup(groups[g], container);
+            }
+        }
+        
         // Back to top functionality
         function initBackToTop() {
             const backToTopBtn = document.getElementById('back-to-top');
@@ -818,7 +1007,9 @@
             renderOrganizers(); // Render organizers (now sorted)
             renderParticipants(); // Render participants (sorted and updated)
             // Attach event listeners for filtering
-            document.getElementById('confirmed-filter').addEventListener('change', renderParticipants);
+            //document.getElementById('confirmed-filter').addEventListener('change', renderParticipants);
+            //document.getElementById('search-input').addEventListener('input', renderParticipants);
+            document.getElementById('group-filter').addEventListener('change', renderParticipants);
             document.getElementById('search-input').addEventListener('input', renderParticipants);
 
             // Initialize new navigation features
@@ -1128,30 +1319,64 @@
             </div>
         </section>
 
-        <!-- Participants Section -->
+        <!-- Updated Participants Section -->
         <section id="participants" class="container-section">
             <h3 class="text-3xl font-bold text-gray-900 mb-4 text-center">Confirmed Speakers & Participants</h3>
-            <p class="text-center text-gray-600 mb-8">A growing list of experts in real-time control, adaptive capacity,
-                and resilience of complex systems.</p>
+            <p class="text-center text-gray-600 mb-8">Experts contributing to resilience of complex cyber-physical infrastructure systems</p>
 
-            <!-- Search and Filter Controls -->
-            <div
-                class="flex flex-col md:flex-row gap-4 mb-8 p-4 bg-white rounded-lg shadow-inner border border-gray-200">
-                <input type="text" id="search-input" oninput="renderParticipants()"
-                    placeholder="Search by name, topic, expertise, or institution..."
-                    class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
-
-                <select id="confirmed-filter" onchange="renderParticipants()"
-                    class="p-3 border border-gray-300 rounded-lg appearance-none focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+            <!-- Filters -->
+            <div class="flex flex-col md:flex-row gap-4 mb-10 p-4 bg-white rounded-lg shadow-inner border border-gray-200 max-w-4xl mx-auto">
+                <input type="text" id="search-input" placeholder="Search by name, topic, expertise, or institution..." 
+                       class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                <select id="group-filter" class="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 bg-white">
                     <option value="all">All Participants</option>
-                    <option value="confirmed">Confirmed Only</option>
-                    <option value="pending">Pending Confirmation</option>
+                    <option value="United States">United States Only</option>
+                    <option value="Singapore">Singapore Only</option>
+                    <option value="Other">Other International Only</option>
                 </select>
             </div>
 
-            <!-- Participant Grid -->
-            <div id="participants-list" class="grid grid-cols-1 md:grid-cols-2 lg:col-span-3 gap-6">
-                <!-- Participant cards will be inserted here by JavaScript -->
+            <!-- Three Group Sections -->
+            <div class="space-y-16">
+                <!-- US -->
+                <div id="us-section" class="group-section group-us">
+                    <div class="flex items-center gap-4 mb-8">
+                        <!--<span class="text-9xl emoji leading-none">US</span>-->
+                        <!--<span class="mr-2 text-3xl emoji">US</span>-->
+                        <img src="https://flagcdn.com/96x72/us.png" alt="United States" class="h-6 md:h-8 w-auto"/>
+                        <div>
+                            <h4 class="text-3xl font-bold text-gray-900">United States Speakers and Participants</h4>
+                            <!--<p id="us-count" class="text-gray-600 text-xl">(0)</p>-->
+                        </div>
+                    </div>
+                    <div id="us-participants-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- Singapore -->
+                <div id="sg-section" class="group-section group-sg">
+                    <div class="flex items-center gap-4 mb-8">
+                        <!--<span class="text-9xl emoji leading-none">🇸🇬</span>-->
+                        <!--<span class="mr-2 text-3xl emoji">🇸🇬</span>-->
+                        <img src="https://flagcdn.com/96x72/sg.png" alt="Singapore" class="h-6 md:h-8 w-auto"/>
+                        <div>
+                            <h4 class="text-3xl font-bold text-gray-900">Singapore Speakers and Participants</h4>
+                            <!--<p id="sg-count" class="text-gray-600 text-xl">(0)</p>-->
+                        </div>
+                    </div>
+                    <div id="sg-participants-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- Other -->
+                <div id="other-section" class="group-section group-other">
+                    <div class="flex items-center gap-4 mb-8">
+                        <span class="text-5xl">🌍</span>
+                        <div>
+                            <h4 class="text-3xl font-bold text-gray-900">Other International Speakers and Participants</h4>
+                            <!--<p id="other-count" class="text-gray-600 text-xl">(0)</p>-->
+                        </div>
+                    </div>
+                    <div id="other-participants-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
             </div>
         </section>
 
