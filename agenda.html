@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda - US-Singapore Research Alliance (R-CPIS)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for Inter font and academic aesthetic */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 3rem;
+            /* Adjust for sticky header height */
+        }
+
+        /* Alternative: Add padding to sections to account for sticky header */
+        section[id] {
+            scroll-margin-top: 3rem;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            /* Light gray background for professionalism */
+            color: #1e293b;
+            /* Dark text */
+        }
+
+        .container-section {
+            padding: 3rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .header-bg {
+            background-color: #1e3a8a;
+            /* Dark Blue */
+            color: white;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background-color: #1e40af;
+            transform: translateY(-2px);
+        }
+
+        /* Section progress indicator */
+        .progress-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.2);
+            z-index: 1001;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Agenda item styling */
+        .agenda-item {
+            border-left: 4px solid #1e3a8a;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .agenda-time {
+            font-weight: bold;
+            color: #1e3a8a;
+            font-size: 0.95rem;
+        }
+
+        .agenda-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+            color: #1e293b;
+        }
+
+        .agenda-speaker {
+            font-size: 0.95rem;
+            color: #475569;
+            margin-top: 0.3rem;
+        }
+
+        /* Topic styling with background highlight */
+        .agenda-topic {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            display: inline-block;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .agenda-topic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+    </style>
+    <script>
+        // Back to top functionality
+        function initBackToTop() {
+            const backToTopBtn = document.getElementById('back-to-top');
+
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTopBtn.classList.add('visible');
+                } else {
+                    backToTopBtn.classList.remove('visible');
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // Progress indicator functionality
+        function initProgressIndicator() {
+            const progressBar = document.getElementById('progress-bar');
+
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+
+                progressBar.style.width = scrollPercent + '%';
+            });
+        }
+
+        // Active navigation highlighting
+        function initActiveNavigation() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    const sectionHeight = section.clientHeight;
+
+                    if (window.pageYOffset >= sectionTop && window.pageYOffset < sectionTop + sectionHeight) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('text-white', 'font-bold');
+                    link.classList.add('text-gray-200');
+
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.remove('text-gray-200');
+                        link.classList.add('text-white', 'font-bold');
+                    }
+                });
+            });
+        }
+
+        // Mobile menu functionality
+        function initMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Close mobile menu when clicking on a link
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        // Initialize on load
+        window.onload = function () {
+            initBackToTop();
+            initActiveNavigation();
+            initMobileMenu();
+            initProgressIndicator();
+        };
+    </script>
+</head>
+
+<body>
+
+    <!-- Header / Logo -->
+    <header class="header-bg shadow-lg sticky top-0 z-50">
+        <div class="container-section flex justify-between items-center h-20">
+            <!-- REPLACEMENT HERE -->
+            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">US-SINGAPORE RESEARCH ALLIANCE</h1>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-4">
+                <a href="index.html#overview"
+                    class="text-gray-200 hover:text-white font-medium transition-colors duration-200">Overview</a>
+                <a href="index.html#rationale"
+                    class="text-gray-200 hover:text-white font-medium transition-colors duration-200">Rationale</a>
+                <a href="index.html#organizers"
+                    class="text-gray-200 hover:text-white font-medium transition-colors duration-200">Organizers</a>
+                <a href="index.html#participants"
+                    class="text-gray-200 hover:text-white font-medium transition-colors duration-200">Participants</a>
+                <a href="agenda.html"
+                    class="text-gray-200 hover:text-white font-medium transition-colors duration-200">Agenda</a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-white p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <nav id="mobile-menu" class="md:hidden hidden bg-blue-900 border-t border-blue-700">
+            <div class="container-section py-4 space-y-2">
+                <a href="index.html#overview"
+                    class="block text-gray-200 hover:text-white font-medium py-2 transition-colors duration-200">Overview</a>
+                <a href="index.html#rationale"
+                    class="block text-gray-200 hover:text-white font-medium py-2 transition-colors duration-200">Rationale</a>
+                <a href="index.html#organizers"
+                    class="block text-gray-200 hover:text-white font-medium py-2 transition-colors duration-200">Organizers</a>
+                <a href="index.html#participants"
+                    class="block text-gray-200 hover:text-white font-medium py-2 transition-colors duration-200">Participants</a>
+                <a href="agenda.html"
+                    class="block text-gray-200 hover:text-white font-medium py-2 transition-colors duration-200">Agenda</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="agenda" class="container-section text-center bg-white/80 rounded-b-xl shadow-lg pt-8">
+            <h2 class="text-5xl font-extrabold text-gray-900 leading-tight mb-6">
+                Workshop Agenda
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                Detailed agenda and schedule for the US-Singapore Research Alliance Workshop
+            </p>
+        </section>
+
+        <!-- Agenda Content Section -->
+        <section class="container-section">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Day 1 -->
+                <div class="card rounded-xl p-8 shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 pb-4 border-b-2 border-blue-500">Day 1 - March 18, 2026</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="agenda-item">
+                            <div class="agenda-time">08:00 - 08:30 AM</div>
+                            <div class="agenda-title">Registration & Breakfast</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">08:30 - 09:00 AM</div>
+                            <div class="agenda-title">Welcome & Opening Remarks</div>
+                            <div class="agenda-speaker">Welcome by Cynthia Chen and Jonas Joerin</div>
+                            <div class="agenda-speaker">Opening Remarks by Subodh Mhaisalkar (10 mins)</div>
+                            <div class="agenda-speaker">NSF Program directors (10 mins)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">09:00 - 09:05 AM</div>
+                            <div class="agenda-title">Opening Remarks for Keynote #1</div>
+                            <div class="agenda-speaker">Elaine Tan (Center for Livable Cities)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">09:05 - 09:35 AM</div>
+                            <div class="agenda-title">Keynote #1</div>
+                            <div class="agenda-speaker">David Johnson</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">09:35 - 09:45 AM</div>
+                            <div class="agenda-title">Morning Coffee Break</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">09:45 - 11:15 AM</div>
+                            <div class="agenda-title">Presentation Block #1 + Panel Discussion #1</div>
+                            <div class="agenda-topic">Topic A - Urban Solutions for Smart Cities</div>
+                            <div class="agenda-subtitle">Government Strategies and Transforming Technologies (a focus on robotics)</div>
+                            <div class="agenda-speaker">Moderator: Abhishek Dubey</div>
+                            <div class="agenda-title">Presenters and Panelists</div>
+                            <div class="agenda-speaker">- Jonathan Pan (HTX)</div>
+                            <div class="agenda-speaker">- Tichakorn (Nok) Wongpiromsarn (Iowa State University)</div>
+                            <div class="agenda-speaker">- Cecilia Laschi (NUS)</div>
+                            <div class="agenda-speaker">- Lihua Xie (NUS)</div>
+                            <div class="agenda-speaker">- Chen Feng (NUS)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">11:15 - 11:25 AM</div>
+                            <div class="agenda-title">Coffee Break</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">11:25 - 12:55 PM</div>
+                            <div class="agenda-title">Presentation Block #2 + Panel Discussion #2</div>
+                            <div class="agenda-topic">Topic B - Adaptive Capacity of Infrastructure Systems</div>
+                            <div class="agenda-subtitle">Design, Management, and Decision-Making</div>
+                            <div class="agenda-speaker">Moderator: Daan Liang (University of Alabama)</div>
+                            <div class="agenda-title">Presenters and Panelists</div>
+                            <div class="agenda-speaker">- Pin Zhang (NUS)</div>
+                            <div class="agenda-speaker">- Yunhuo Zhang (Land Transport Authority)</div>
+                            <div class="agenda-speaker">- Ando Hiroe (Nagoya University)</div>
+                            <div class="agenda-speaker">- Sara Hamideh (Stony Brook University)</div>
+                            <div class="agenda-speaker">- Rafael Munoz-Carpena (University of Florida)</div>
+                        </div>
+
+                        <div class="agenda-item">
+                            <div class="agenda-time">12:55 - 01:55 PM</div>
+                            <div class="agenda-title">Networking Lunch</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">01:55 - 02:00 PM</div>
+                            <div class="agenda-title">Opening Remarks for Keynote #2</div>
+                            <div class="agenda-speaker">Jonas Joerin (UIUC Advanced Research in singapore)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">02:00 - 02:30 PM</div>
+                            <div class="agenda-title">Keynote #2</div>
+                            <div class="agenda-speaker">Martin Hauske (ORACLE)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">02:30 - 04:00 PM</div>
+                            <div class="agenda-title">Presentation Block #3 + Panel Discussion #3</div>
+                            <div class="agenda-topic">Topic C - AI for Infrastructure System Controls</div>
+                            <div class="agenda-speaker">Moderator: Tony Kuh (University of Hawaii)</div>
+                            <div class="agenda-title">Presenters and Panelists</div>
+                            <div class="agenda-speaker">- Vicent Tang (NVIDIA)</div>
+                            <div class="agenda-speaker">- Gianmarco Mengaldo (NUS)</div>
+                            <div class="agenda-speaker">- Katherine Flanigan (CMU)</div>
+                            <div class="agenda-speaker">- Nalini Venkatasubramanian (UC Irvine)</div>
+                            <div class="agenda-speaker">- Yafeng Yin (University of Michigan)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">04:00 - 04:15 PM</div>
+                            <div class="agenda-title">Afternoon Snack Break</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">04:15 - 05:15 PM</div>
+                            <div class="agenda-title">Panel Discussion: Day 1 Reflections</div>
+                            <div class="agenda-speaker">Moderator: David Corman and Jonas Joerin</div>
+                            <div class="agenda-title">Panelists</div>
+                            <div class="agenda-speaker">- Gianmarco Mengaldo (NUS)</div>
+                            <div class="agenda-speaker">- NSF program directors</div>
+                            <div class="agenda-speaker">- NRF program directors</div>
+
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">05:15 - 05:30 PM</div>
+                            <div class="agenda-title">Day 1 Wrap-up</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 2 -->
+                <div class="card rounded-xl p-8 shadow-md">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 pb-4 border-b-2 border-blue-500">Day 2 - March 19, 2026</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="agenda-item">
+                            <div class="agenda-time">08:00 - 08:30 AM</div>
+                            <div class="agenda-title">Breakfast & Networking</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">08:30 - 08:45 AM</div>
+                            <div class="agenda-title">Day 2 Kickoff</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">08:45 - 08:50 AM</div>
+                            <div class="agenda-title">Opening Remarks for Keynote #3</div>
+                            <div class="agenda-speaker">Qiang Meng (NUS)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">08:50 - 09:20 AM</div>
+                            <div class="agenda-title">Keynote #3</div>
+                            <div class="agenda-speaker">Xinwei Chen (Singapore Maritime Institute)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">09:20 - 09:35 AM</div>
+                            <div class="agenda-title">Morning Coffee Break</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">09:35 - 11:05 AM</div>
+                            <div class="agenda-title">Presentation Block #4 + Panel Discussion #4</div>
+                            <div class="agenda-topic">Topic D - Supply Chain and Logistics</div>
+                            <div class="agenda-speaker">Moderator: Yueyue Fan (UC Davis)</div>
+                            <div class="agenda-title">Presenters and Panelists</div>
+                            <div class="agenda-speaker">- Qiang Meng (NUS)</div>
+                            <div class="agenda-speaker">- Ek Peng Chew (NUS)</div>
+                            <div class="agenda-speaker">- Michael Bell (University of Sydney)</div>
+                            <div class="agenda-speaker">- Yanfeng Ouyang (UIUC)</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">11:05 - 11:20 AM</div>
+                            <div class="agenda-title">Coffee Break</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">11:20 - 12:50 PM</div>
+                            <div class="agenda-title">Presentation Block #5 + Panel Discussion #5</div>
+                            <div class="agenda-topic">Topic E - Transportation and Urban Mobility Systems</div>
+                            <div class="agenda-speaker">Moderator: Cynthia Chen (University of Washington)</div>
+                            <div class="agenda-title">Presenters and Panelists</div>
+                            <div class="agenda-speaker">- Prateek Bansal (NUS)</div>
+                            <div class="agenda-speaker">- Marco Nie (Northeastern University)</div>
+                            <div class="agenda-speaker">- Kaidi Yang (NUS)</div>
+                            <div class="agenda-speaker">- Abhishek Dubey (Vanderbilt University)</div>
+                            <div class="agenda-speaker">- Aranya Chakrabortty (NCST)</div>
+                        </div>
+
+                        <div class="agenda-item">
+                            <div class="agenda-time">12:50 - 02:00 PM</div>
+                            <div class="agenda-title">Networking Lunch</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">02:00 - 03:00 PM</div>
+                            <div class="agenda-title">Collaboration Session</div>
+                            <div class="agenda-subtitle">Synthesis and Prioritization of Key Research Themes</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">03:00 - 05:00 PM</div>
+                            <div class="agenda-title">Mini-Proposal Development Session</div>
+                            <div class="agenda-subtitle">Collaborative Teams Develop Concept Proposals</div>
+                        </div>
+                        <div class="agenda-item">
+                            <div class="agenda-time">05:00 - 05:30 PM</div>
+                            <div class="agenda-title">Closing Reflections & Workshop Conclusion</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12 py-8">
+        <div class="container-section text-center">
+            <p class="text-lg font-semibold mb-2">US-Singapore R-CPIS Alliance</p>
+            <p class="text-sm text-gray-400">&copy; 2025 Research Alliance Proposal. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Progress Indicator -->
+    <div class="progress-indicator">
+        <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="back-to-top" title="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+</body>
+
+</html>
