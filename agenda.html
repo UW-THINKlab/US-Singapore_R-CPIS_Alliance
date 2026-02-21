@@ -140,8 +140,38 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        .agenda-topic {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* Scrollable agenda day container */
+        .agenda-day-content {
+            max-height: 700px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        /* Custom scrollbar styling */
+        .agenda-day-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .agenda-day-content::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .agenda-day-content::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .agenda-day-content::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Mobile responsive - remove height restriction on small screens */
+        @media (max-width: 768px) {
+            .agenda-day-content {
+                max-height: none;
+                overflow-y: visible;
+            }
         }
 
     </style>
@@ -290,11 +320,11 @@
 
     <main>
         <!-- Hero Section -->
-        <section id="agenda" class="container-section text-center bg-white/80 rounded-b-xl shadow-lg pt-8">
+        <section id="agenda" class="container-section text-center bg-white/80 rounded-b-xl shadow-lg pt-8 pb-4">
             <h2 class="text-5xl font-extrabold text-gray-900 leading-tight mb-6">
                 Workshop Agenda
             </h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-0">
                 Detailed agenda and schedule for the US-Singapore Research Alliance Workshop
             </p>
         </section>
@@ -306,10 +336,11 @@
                 <div class="card rounded-xl p-8 shadow-md">
                     <h3 class="text-2xl font-bold text-gray-900 mb-6 pb-4 border-b-2 border-blue-500">Day 1 - March 18, 2026</h3>
                     
-                    <div class="space-y-6">
+                    <div class="agenda-day-content">
+                        <div class="space-y-6">
                         <div class="agenda-item">
                             <div class="agenda-time">08:00 - 08:30 AM</div>
-                            <div class="agenda-title">Registration & Breakfast</div>
+                            <div class="agenda-subtitle">Registration & Breakfast</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">08:30 - 09:00 AM</div>
@@ -330,7 +361,7 @@
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">09:35 - 09:45 AM</div>
-                            <div class="agenda-title">Morning Coffee Break</div>
+                            <div class="agenda-subtitle">Morning Coffee Break</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">09:45 - 11:15 AM</div>
@@ -347,7 +378,7 @@
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">11:15 - 11:25 AM</div>
-                            <div class="agenda-title">Coffee Break</div>
+                            <div class="agenda-subtitle">Coffee Break</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">11:25 - 12:55 PM</div>
@@ -365,7 +396,7 @@
 
                         <div class="agenda-item">
                             <div class="agenda-time">12:55 - 01:55 PM</div>
-                            <div class="agenda-title">Networking Lunch</div>
+                            <div class="agenda-subtitle">Networking Lunch</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">01:55 - 02:00 PM</div>
@@ -391,7 +422,7 @@
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">04:00 - 04:15 PM</div>
-                            <div class="agenda-title">Afternoon Snack Break</div>
+                            <div class="agenda-subtitle">Afternoon Snack Break</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">04:15 - 05:15 PM</div>
@@ -405,7 +436,8 @@
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">05:15 - 05:30 PM</div>
-                            <div class="agenda-title">Day 1 Wrap-up</div>
+                            <div class="agenda-subtitle">Day 1 Wrap-up</div>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -414,10 +446,11 @@
                 <div class="card rounded-xl p-8 shadow-md">
                     <h3 class="text-2xl font-bold text-gray-900 mb-6 pb-4 border-b-2 border-blue-500">Day 2 - March 19, 2026</h3>
                     
-                    <div class="space-y-6">
+                    <div class="agenda-day-content">
+                        <div class="space-y-6">
                         <div class="agenda-item">
                             <div class="agenda-time">08:00 - 08:30 AM</div>
-                            <div class="agenda-title">Breakfast & Networking</div>
+                            <div class="agenda-subtitle">Breakfast & Networking</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">08:30 - 08:45 AM</div>
@@ -435,7 +468,7 @@
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">09:20 - 09:35 AM</div>
-                            <div class="agenda-title">Morning Coffee Break</div>
+                            <div class="agenda-subtitle">Morning Coffee Break</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">09:35 - 11:05 AM</div>
@@ -450,7 +483,7 @@
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">11:05 - 11:20 AM</div>
-                            <div class="agenda-title">Coffee Break</div>
+                            <div class="agenda-subtitle">Coffee Break</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">11:20 - 12:50 PM</div>
@@ -467,7 +500,7 @@
 
                         <div class="agenda-item">
                             <div class="agenda-time">12:50 - 02:00 PM</div>
-                            <div class="agenda-title">Networking Lunch</div>
+                            <div class="agenda-subtitle">Networking Lunch</div>
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">02:00 - 03:00 PM</div>
@@ -481,7 +514,8 @@
                         </div>
                         <div class="agenda-item">
                             <div class="agenda-time">05:00 - 05:30 PM</div>
-                            <div class="agenda-title">Closing Reflections & Workshop Conclusion</div>
+                            <div class="agenda-subtitle">Closing Reflections & Workshop Conclusion</div>
+                        </div>
                         </div>
                     </div>
                 </div>
